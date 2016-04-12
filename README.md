@@ -1,2 +1,2 @@
-# Ludum_Dare_35
-My Ludum Dare 35 game
+# ludum-dare-35
+My game in Love2D for Ludum Dare 35
