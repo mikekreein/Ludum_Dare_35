@@ -1,5 +1,5 @@
 Shape = { 
-    vertices = {}
+    vertices = {},
 }
 Shape.__index = Shape
 
@@ -10,9 +10,12 @@ function Shape.Create(vertices)
   return self
 end
 
-function Shape:render(posx, posy, width, height)
+function Shape:render(posx, posy, width, height, alpha, scale)
     -- Scale the lines and center them inside height and width restrictions
 
+    love.graphics.setColor(255, 255, 255, 255)
+    love.graphics.circle("fill", (posx*width) + (width/2), (posy*height) + (height/2), width/3)
+    
     local minX = 1000000
     local maxX = -1000000
     local minY = 1000000
@@ -24,15 +27,21 @@ function Shape:render(posx, posy, width, height)
         minY = math.min(minY, self.vertices[x][2])
         maxY = math.max(maxY, self.vertices[x][2])
     end
-
-    local border = width / 4
-    love.graphics.setColor(0, 0, 0, 255)
     
+    local borderWidth = width / 4
+    local borderHeight = height / 4
+    love.graphics.setColor(0, 0, 0, alpha)
     
-    local scaledAnchorX = (posx*width) + border
-    local scaledAnchorY = (posy*height) + border
-    local scaledWidth = (width - (2*border))/math.max(1,(maxX - minX))
-    local scaledHeight = (height - (2*border))/math.max(1,(maxY - minY))
+    local maxWidth = math.max(maxX-minX,maxY-minY)
+    local divX = 2--math.max((maxX-minX), 1.5)
+    local divY = 2--math.max((maxY-minY), maxWidth)
+    
+    local scaledAnchorX = (posx*width) + (scale/divX * borderWidth)
+    local scaledAnchorY = (posy*height) + (scale/divY * borderHeight)
+    -- local scaledAnchorX = (posx*width) + ((scale/2 * border) * (((maxX-minX / maxWidth))))
+    -- local scaledAnchorY = (posy*height) + ((scale/2 * border) * (((maxY-minY / maxWidth))))
+    local scaledWidth = (width - (scale*borderWidth))/math.max(1,(maxX - minX))
+    local scaledHeight = (height - (scale*borderHeight))/math.max(1,(maxY - minY))
     for x=1,table.getn(self.vertices)-1 do
         local v1x = (self.vertices[x][1]*scaledWidth)
         local v1y = (self.vertices[x][2]*scaledHeight)
@@ -46,8 +55,8 @@ function Shape:render(posx, posy, width, height)
     local v2y = (self.vertices[table.getn(self.vertices)][2]*scaledHeight)
     love.graphics.line(scaledAnchorX + v1x, scaledAnchorY + v1y, scaledAnchorX + v2x, scaledAnchorY + v2y)
     
-    love.graphics.setColor(0, 0, 0, 128)
-    love.graphics.circle("line", (posx*width) + (width/2), (posy*height) + (height/2), width/2)
+    love.graphics.setColor(0, 0, 0, alpha / 2)
+    love.graphics.circle("line", (posx*width) + (width/2), (posy*height) + (height/2), width/3)
 end
 
 function Shape:validate() 

@@ -11,7 +11,7 @@ function love.load()
     love.graphics.setBackgroundColor(255, 255, 255)
     
     -- GameGrid:generate((love.graphics.getWidth() / 30)-1, (love.graphics.getHeight() / 30)-2)
-    GameGrid:generate(8, 8)
+    GameGrid:generate(12, 8)
     GameGrid:AddRow()
     GameGrid:AddRow()
 end
@@ -30,6 +30,10 @@ function love.draw()
     -- end
     
     GameGrid:draw()
+end
+
+function love.update(dt)
+  flux.update(dt)
 end
 
 function love.keypressed(key) 
@@ -52,11 +56,21 @@ function love.keypressed(key)
         GameGrid:SetSelection(true, nil, -1)
     elseif (key =="d") then
         GameGrid:SetSelection(true, nil, 1)
+    elseif (key == "escape") then 
+        os.exit() 
     end
-    
+    -- local timer = {x =0}
+    -- flux.to(timer, 1, {x = 1}):ease("linear"):oncomplete(
+        -- function()
     if (GameGrid:Validate()) then
+        
         love.audio.play(sfxClearShape)
         love.audio.play(sfxAddRow)
-        GameGrid:AddRow()
+        local timer = {x =0}
+        flux.to(timer, kJuiciness_TokenDisappearSpeed+0.1, {x = 1}):ease("linear"):oncomplete(
+            function()
+                GameGrid:AddRow()
+            end)
     end
+        -- end)
 end
