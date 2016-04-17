@@ -35,3 +35,16 @@ function gameutilities.shallowcopy(orig)
     end
     return copy
 end
+
+function gameutilities.swap(array, index1, index2)
+    array[index1], array[index2] = array[index2], array[index1]
+end
+
+function gameutilities.shuffle(array)
+    local counter = #array
+    while counter > 1 do
+        local index = math.random(counter)
+        gameutilities.swap(array, index, counter)
+        counter = counter - 1
+    end
+end

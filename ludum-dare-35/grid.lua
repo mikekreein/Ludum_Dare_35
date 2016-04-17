@@ -18,6 +18,7 @@ local kShapes = {
 }
 
 local currentLevel = 1
+local currentProgress = 0
 local highestShape = 1
 
 GameGrid = { 
@@ -181,19 +182,54 @@ function GameGrid:AddRow()
         end
     end
     
+
+    local shapes = {}
+    for x=1,table.getn(self.tokens) do
+        if (x < currentLevel+1) then
+            local shapeIndex = math.random(math.min(highestShape, table.getn(kShapes)))
+            table.insert(shapes, shapeIndex)
+        else
+            table.insert(shapes, 0)
+        end
+    end
+    
+    gameutilities.shuffle(shapes)
+    
     for x=1,table.getn(self.tokens) do
         local shape = nil
-        if (math.random(100) < 20 + currentLevel) then
-          local shapeIndex = math.random(math.min(highestShape, table.getn(kShapes)))
-          shape = kShapes[shapeIndex]
+        if (shapes[x] ~= 0) then
+            shape = kShapes[shapes[x]]
+            -- shape = kShapes[math.random(math.min(highestShape, table.getn(kShapes)))]
         end
         self.tokens[x][1] = Token.Create(x, 1, shape)
     end
+    
+    
+    
+    -- for x=1,table.getn(self.tokens) do
+        -- local shape = nil
+        -- if (math.random(100) < 20 + currentLevel) then
+          -- local shapeIndex = math.random(math.min(highestShape, table.getn(kShapes)))
+          -- shape = kShapes[shapeIndex]
+        -- end
+        -- self.tokens[x][1] = Token.Create(x, 1, shape)
+    -- end
     -- self:SetSelection(nil, true, 1)
-    currentLevel = currentLevel + 1
 end
 
-function GameGrid:SetSelection(row, col, delta)
+function GameGrid:SetSelection(x, y) 
+    self.selection[1] = math.floor(x / kTokenSizeWidth) + 1
+    self.selection[2] = math.floor(y / kTokenSizeHeight) + 1
+    
+    -- Clamp our selection so we don't go past our bounds
+    self.selection[1] = math.max(1, self.selection[1])
+    self.selection[1] = math.min(table.getn(self.tokens), self.selection[1])
+    
+    self.selection[2] = math.max(1, self.selection[2])
+    self.selection[2] = math.min(table.getn(self.tokens[1]), self.selection[2])
+end
+
+function GameGrid:SetSelectionDelta(row, col, delta)
     if (row ~= nil) then
         self.selection[1] = self.selection[1] + delta
     else
@@ -257,6 +293,14 @@ function GameGrid:Validate()
                     removedShape = true
                 end
             end
+        end
+    end
+    
+    if (removedShape) then
+        currentProgress = currentProgress + 1
+        if (currentProgress >= currentLevel * 2) then
+            currentLevel = currentLevel + 1
+            currentProgress = 0
         end
     end
     
