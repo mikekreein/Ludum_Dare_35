@@ -12,3 +12,5 @@ The goal is to clear the shape tokens from the board by forming the shapes insid
 If no proper mouse is present, use your pointer device to hover over a token and WASD to shift and SHIFT/SPACE to add an additional row
 
 The more shapes you clear, the more varied the shapes get!
+
+Source Requires Love2D (https://love2d.org/) to run
